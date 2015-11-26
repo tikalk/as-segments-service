@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title></title>
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="//cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+  <script src="vertx-eventbus.js"></script>
+</head>
+
+<style>
+  .segment {
+    font-size: 20pt;
+  }
+</style>
+
+<body>
+
+<div class="segment">Latest Segments:</div>
+<br>
+
+<div id="status" class="segment"></div>
+
+<script>
+  var eb = new EventBus("http://localhost:9080/eventbus");
+
+  eb.onopen = function () {
+    eb.registerHandler("segments-feed", function (err, msg) {
+      var str = "<code>" + msg.body + "</code><br>";
+      $('#status').prepend(str);
+    })
+  }
+
+</script>
+
+</body>
+</html>

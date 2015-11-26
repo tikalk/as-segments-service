@@ -1,0 +1,10 @@
+{
+	"http-port" : 9080,
+	"redis-host" : "localhost" ,
+	
+	"consumer" : {
+	    "zookeeper.host" : "localhost",
+	    "group.id" : "segmentServiceGroup",
+	    "topics" : ["as-segments"]
+	 }
+}
