@@ -31,14 +31,14 @@ public class SegmentPersistVerticle extends AbstractVerticle {
 		logger.debug("Got segment message {}",newSegment);
 		if(redis==null)
 			redis = RedisClient.create(vertx, config);
-		redis.set(newSegment.getString("id"), newSegment.toString(), ar->handleFetchedCurrentSegment(newSegment,ar));
+		redis.set("segment."+newSegment.getString("id"), newSegment.toString(), ar->handleFetchedCurrentSegment(newSegment,ar));
 	}
 
 	
 	
 	private void handleFetchedCurrentSegment(final JsonObject newSegment, final AsyncResult<Void> currentSegmentAr) {
 		if (currentSegmentAr.succeeded()){
-			redis.zadd("segment.angel."+(newSegment.getString("id")), newSegment.getLong("startTime"), newSegment.toString(), zaAr->handleSegmentAdded(newSegment.toString(),zaAr));
+			redis.zadd("segments.ids.angel."+(newSegment.getInteger("angelId")), newSegment.getLong("startTime"), newSegment.getString("id"), zaAr->handleSegmentAdded(newSegment.toString(),zaAr));
 		}else
 			logger.error("Problem On ZRange for {}: ",newSegment,currentSegmentAr.cause());
 	}
@@ -46,7 +46,7 @@ public class SegmentPersistVerticle extends AbstractVerticle {
 
 	private void handleSegmentAdded(final String segment, final AsyncResult<Long> ar) {
 		if (ar.succeeded()){
-			logger.debug("Added Segment to Redis. Segment is {}",segment);
+			logger.debug("Update/Add segment in Redis, and now will publish it. Segment is {}",segment);
 			vertx.eventBus().publish("segments-feed", segment);
 		}
 		else

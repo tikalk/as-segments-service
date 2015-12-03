@@ -1,5 +1,9 @@
 package com.tikal.angelsense.segmentservice;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.buffer.Buffer;
@@ -50,15 +54,26 @@ public class SegmentFinderServiceVerticle extends AbstractVerticle {
 		else {
 			final String start = routingContext.request().params().get("start");
 			final String stop = routingContext.request().params().get("stop");
-			redis.zrange("segment.angel." + angelId, Long.valueOf(start), Long.valueOf(stop),ar -> handleRedisQuery(ar, routingContext));
+			redis.zrevrangebyscore("segments.ids.angel." + angelId, stop, start,null,ar -> handleRedisQuery(ar, routingContext));
 		}
 	}
 
 	private void handleRedisQuery(final AsyncResult<JsonArray> ar, final RoutingContext routingContext) {
 		if (ar.succeeded()) {
-			routingContext.response().end(Buffer.factory.buffer(ar.result().toString()));
+			final List<String> ids = (List<String>) ar.result().getList().stream().map(s->"segment."+s).collect(toList());
+			redis.mgetMany(ids, arGet -> handleRedisMGet(arGet, routingContext));
+//			routingContext.response().end(Buffer.factory.buffer(ar.result().toString()));
 		} else {
 			logger.error("Failed to run Redis query: ", ar.cause());
+			routingContext.response().setStatusCode(500).setStatusMessage(ar.cause().getMessage()).end();
+		}
+	}
+	
+	private void handleRedisMGet(final AsyncResult<JsonArray> ar, final RoutingContext routingContext) {
+		if (ar.succeeded()) {
+			routingContext.response().end(Buffer.factory.buffer(ar.result().toString()));
+		} else {
+			logger.error("Failed to run Redis MGet: ", ar.cause());
 			routingContext.response().setStatusCode(500).setStatusMessage(ar.cause().getMessage()).end();
 		}
 	}
