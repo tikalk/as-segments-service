@@ -1,1 +1,29 @@
-AngelSense Segment Service
+# AngelSense Segments Service
+
+This microservice consumes segments from the segments Kafka topic (fed by the analytics). The segments are stored in the service DB.
+It is based  on Vert.x 3
+
+## How to build
+_______________
+From the project home folder run the following command:
+
+./gradlew clean shadowJar zipAll
+
+This will create self contained zip, that you can unzip on host container. The output zip is located at
+as-segments-service/build/distributions/as-segment-service-3.1.0.zip
+
+## How to run
+-----------
+You must run ZooKeeper and Kafka, before you run this service.
+You also need to have the as-management service running
+You also need to have a Redis DB running for this service
+
+Unzip the file as-segments-service/build/distributions/as-segment-service-3.1.0.zip
+cd to the created folder (as-segment-service-3.1.0)
+Run the following command : 
+./segment-service.sh
+
+
+
+ 
+
