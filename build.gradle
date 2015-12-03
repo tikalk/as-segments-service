@@ -42,7 +42,7 @@ shadowJar {
     classifier = 'fat'
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
-        attributes 'Main-Verticle': 'com.tikal.angelsense.segmentservice.SegmentPersistVerticle'
+        attributes 'Main-Verticle': 'com.tikal.angelsense.segmentservice.SegmentServiceVerticle'
     }
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
