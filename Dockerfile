@@ -8,7 +8,7 @@
 
 FROM java:8
 
-ENV VERTICLE_FILE as-segment-service-3.1.0-fat.jar
+ENV VERTICLE_FILE as-segments-service-3.1.0-fat.jar
 
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles
