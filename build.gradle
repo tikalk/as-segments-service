@@ -13,6 +13,8 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
 version = '3.1.0'
 
 if (!JavaVersion.current().java8Compatible) {
@@ -68,7 +70,13 @@ task buildImage(type: DockerBuildImage) {
     dependsOn shadowJar
     quiet = false
     inputDir = projectDir
-    tag = "$registerProdBaseName/$dockerBranch/$project.name:$dockerTag"
+    tag = "$registerBaseName/$dockerBranch/$project.name:$dockerTag"
+}
+
+task pushImage(type: DockerPushImage) {
+    dependsOn addTagWithDevPrefix
+    imageName = "$registerBaseName/$dockerBranch/$project.name"
+    tag="$dockerTag"
 }
 
 
