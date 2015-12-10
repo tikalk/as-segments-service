@@ -74,7 +74,7 @@ task buildImage(type: DockerBuildImage) {
 }
 
 task pushImage(type: DockerPushImage) {
-    dependsOn addTagWithDevPrefix
+    dependsOn buildImage
     imageName = "$registerBaseName/$dockerBranch/$project.name"
     tag="$dockerTag"
 }
