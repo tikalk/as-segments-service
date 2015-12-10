@@ -1,7 +1,6 @@
 package com.tikal.angelsense.segmentservice;
 
-import static java.util.stream.Collectors.toList;
-
+import java.util.Arrays;
 import java.util.List;
 
 import io.vertx.core.AbstractVerticle;
@@ -9,6 +8,9 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -17,17 +19,17 @@ import io.vertx.ext.web.handler.sockjs.BridgeEventType;
 import io.vertx.ext.web.handler.sockjs.BridgeOptions;
 import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
-import io.vertx.redis.RedisClient;
-import io.vertx.redis.RedisOptions;
 
 public class SegmentFinderServiceVerticle extends AbstractVerticle {
 
 	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SegmentFinderServiceVerticle.class);
-	private RedisClient redis;
+	private MongoClient mongoClient;
+	private String collectionName;
 
 	@Override
 	public void start() {
-		redis = RedisClient.create(vertx, new RedisOptions().setHost(config().getString("redis-host")));
+		mongoClient = MongoClient.createShared(vertx, config().getJsonObject("mongoConfig"));
+		collectionName = config().getJsonObject("mongoConfig").getString("segments_col_name");
 
 		final Router router = Router.router(vertx);
 		router.route(HttpMethod.GET, "/segments/angel/:angelId").handler(this::handleQuery);
@@ -54,26 +56,20 @@ public class SegmentFinderServiceVerticle extends AbstractVerticle {
 		else {
 			final String start = routingContext.request().params().get("start");
 			final String stop = routingContext.request().params().get("stop");
-			redis.zrevrangebyscore("segments.ids.angel." + angelId, stop, start,null,ar -> handleRedisQuery(ar, routingContext));
-		}
-	}
-
-	private void handleRedisQuery(final AsyncResult<JsonArray> ar, final RoutingContext routingContext) {
-		if (ar.succeeded()) {
-			final List<String> ids = (List<String>) ar.result().getList().stream().map(s->"segment."+s).collect(toList());
-			redis.mgetMany(ids, arGet -> handleRedisMGet(arGet, routingContext));
-//			routingContext.response().end(Buffer.factory.buffer(ar.result().toString()));
-		} else {
-			logger.error("Failed to run Redis query: ", ar.cause());
-			routingContext.response().setStatusCode(500).setStatusMessage(ar.cause().getMessage()).end();
+			final JsonObject datePart = new JsonObject().put("startTime",	new JsonObject().put("$gte", Long.valueOf(start)).put("$lte", Long.valueOf(stop)));
+			final JsonObject angelIdPart = new JsonObject().put("angelId",Integer.valueOf(angelId));
+			final JsonObject query = new JsonObject().put("$and", new JsonArray(Arrays.asList(angelIdPart,datePart)));
+			logger.debug("query is : {}",query);
+			final FindOptions findOptions = new FindOptions(new JsonObject().put("sort", new JsonObject().put("startTime", -1)));
+			mongoClient.findWithOptions(collectionName, query,findOptions , ar -> handleMongoQuery(ar, routingContext));
 		}
 	}
 	
-	private void handleRedisMGet(final AsyncResult<JsonArray> ar, final RoutingContext routingContext) {
+	private void handleMongoQuery(final AsyncResult<List<JsonObject>> ar, final RoutingContext routingContext) {
 		if (ar.succeeded()) {
 			routingContext.response().end(Buffer.factory.buffer(ar.result().toString()));
 		} else {
-			logger.error("Failed to run Redis MGet: ", ar.cause());
+			logger.error("Failed to run Mongo query: ", ar.cause());
 			routingContext.response().setStatusCode(500).setStatusMessage(ar.cause().getMessage()).end();
 		}
 	}

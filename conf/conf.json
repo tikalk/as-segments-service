@@ -1,6 +1,11 @@
 {
 	"http-port" : 9080,
-	"redis-host" : "localhost" ,
+	"mongoConfig" : {
+		"recreate" : true,
+		"segments_col_name" : "segments",
+		"connection_string" : "mongodb://localhost:27017",
+		"db_name" : "segments_db"
+	}, 
 	
 	"consumer" : {
 	    "zookeeper.host" : "localhost",

@@ -8,7 +8,7 @@ public class SegmentServiceVerticle extends AbstractVerticle {
 	@Override
 	public void start() {
 		vertx.deployVerticle(new SegmentFinderServiceVerticle(),new DeploymentOptions().setConfig(config()));
-		vertx.deployVerticle(new SegmentPersistVerticle(),new DeploymentOptions().setConfig(config()));
+		vertx.deployVerticle(new SegmentMongoPersistVerticle(),new DeploymentOptions().setConfig(config()));
 	}
 	
 

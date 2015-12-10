@@ -16,7 +16,7 @@ as-segments-service/build/distributions/as-segment-service-3.1.0.zip
 -----------
 You must run ZooKeeper and Kafka, before you run this service.
 You also need to have the as-management service running
-You also need to have a Redis DB running for this service
+You also need to have a MongoDB running for this service
 
 Unzip the file as-segments-service/build/distributions/as-segment-service-3.1.0.zip
 cd to the created folder (as-segment-service-3.1.0)
