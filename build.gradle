@@ -32,7 +32,7 @@ repositories {
 }
 docker{
     url = "https://$dockerHost:2376"
-    certPath = new File(System.properties['user.home'], certUrl)
+    certPath = new File( certUrl)
 }
 
 
