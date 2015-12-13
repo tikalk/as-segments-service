@@ -32,7 +32,7 @@ repositories {
 }
 docker{
     url = "$dockerHost"
-    certPath = new File( certUrl)
+    //certPath = new File( certUrl)
 }
 
 
