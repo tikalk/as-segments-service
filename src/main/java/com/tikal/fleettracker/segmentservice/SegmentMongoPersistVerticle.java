@@ -1,4 +1,4 @@
-package com.tikal.angelsense.segmentservice;
+package com.tikal.fleettracker.segmentservice;
 
 import java.util.Arrays;
 
@@ -39,7 +39,7 @@ public class SegmentMongoPersistVerticle extends AbstractVerticle {
 		
 		final JsonArray indexes = new JsonArray(Arrays.asList(
 						new JsonObject().put("key", new JsonObject().put("startTime", -1)).put("name", "segments_startTime_idx"),
-						new JsonObject().put("key", new JsonObject().put("angelId", 1).put("startTime", -1)).put("name", "segments_angelId_startTime_idx")
+						new JsonObject().put("key", new JsonObject().put("vehicleId", 1).put("startTime", -1)).put("name", "segments_vehicleId_startTime_idx")
 				));
 		final JsonObject createIndexesCommand = new JsonObject().put("createIndexes", collectionName).put("indexes", indexes);
 		mongoClient.runCommand("createIndexes", createIndexesCommand, this::handleCommand);
@@ -60,21 +60,21 @@ public class SegmentMongoPersistVerticle extends AbstractVerticle {
 		logger.debug("Got segment message {}",segment);
 		final Boolean isNew = (Boolean) segment.remove("isNew");
 		if(isNew)
-			mongoClient.insert(collectionName, segment, ar->handleSegmentAdded(isNew,segment.toString(),segment.getInteger("angelId"),ar));
+			mongoClient.insert(collectionName, segment, ar->handleSegmentAdded(isNew,segment.toString(),segment.getInteger("vehicleId"),ar));
 		else
-			mongoClient.save(collectionName, segment, ar->handleSegmentAdded(isNew,segment.toString(),segment.getInteger("angelId"),ar));
+			mongoClient.save(collectionName, segment, ar->handleSegmentAdded(isNew,segment.toString(),segment.getInteger("vehicleId"),ar));
 	}
 
 	
 
-	private void handleSegmentAdded(final Boolean isNew, final String segment, final Integer angelId, final AsyncResult<String> ar) {
+	private void handleSegmentAdded(final Boolean isNew, final String segment, final Integer vehicleId, final AsyncResult<String> ar) {
 		if (ar.succeeded()){
 			if(isNew)
 				logger.debug("Add a new segment in Mongo, and now will publish it. Segment is {}",segment);
 			else
 				logger.debug("Update existing segment in Mongo, and now will publish it. Segment is {}",segment);
 			vertx.eventBus().publish("segments-feed-all", segment);
-			vertx.eventBus().publish("segments-feed-"+angelId, segment);
+			vertx.eventBus().publish("segments-feed-"+vehicleId, segment);
 		}
 		else
 			logger.error("Problem on adding Segment {}: ",segment,ar.cause());

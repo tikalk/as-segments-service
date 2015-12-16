@@ -1,4 +1,4 @@
-# AngelSense Segments Service
+# FleetTracker Segments Service
 
 This microservice consumes segments from the segments Kafka topic (fed by the analytics). The segments are stored in the service DB.
 It is based  on Vert.x 3

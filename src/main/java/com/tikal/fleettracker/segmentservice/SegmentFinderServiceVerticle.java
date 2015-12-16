@@ -1,4 +1,4 @@
-package com.tikal.angelsense.segmentservice;
+package com.tikal.fleettracker.segmentservice;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ public class SegmentFinderServiceVerticle extends AbstractVerticle {
 		collectionName = config().getJsonObject("mongoConfig").getString("segments_col_name");
 
 		final Router router = Router.router(vertx);
-		router.route(HttpMethod.GET, "/segments/angel/:angelId").handler(this::handleQuery);
+		router.route(HttpMethod.GET, "/segments/vehicle/:vehicleId").handler(this::handleQuery);
 		// Allow outbound traffic to the segments-feed address
 		final BridgeOptions options = new BridgeOptions().addOutboundPermitted(new PermittedOptions().setAddressRegex("segments-feed.*"));
 		router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options, this::handleBridgeEvent));
@@ -50,15 +50,15 @@ public class SegmentFinderServiceVerticle extends AbstractVerticle {
 	}
 
 	private void handleQuery(final RoutingContext routingContext) {
-		final String angelId = routingContext.request().getParam("angelId");
-		if (angelId == null)
-			routingContext.response().setStatusCode(400).setStatusMessage("angelId is missing").end();
+		final String vehicleId = routingContext.request().getParam("vehicleId");
+		if (vehicleId == null)
+			routingContext.response().setStatusCode(400).setStatusMessage("vehicleId is missing").end();
 		else {
 			final String start = routingContext.request().params().get("start");
 			final String stop = routingContext.request().params().get("stop");
 			final JsonObject datePart = new JsonObject().put("startTime",	new JsonObject().put("$gte", Long.valueOf(start)).put("$lte", Long.valueOf(stop)));
-			final JsonObject angelIdPart = new JsonObject().put("angelId",Integer.valueOf(angelId));
-			final JsonObject query = new JsonObject().put("$and", new JsonArray(Arrays.asList(angelIdPart,datePart)));
+			final JsonObject vehicleIdPart = new JsonObject().put("vehicleId",Integer.valueOf(vehicleId));
+			final JsonObject query = new JsonObject().put("$and", new JsonArray(Arrays.asList(vehicleIdPart,datePart)));
 			logger.debug("query is : {}",query);
 			final FindOptions findOptions = new FindOptions(new JsonObject().put("sort", new JsonObject().put("startTime", -1)));
 			mongoClient.findWithOptions(collectionName, query,findOptions , ar -> handleMongoQuery(ar, routingContext));

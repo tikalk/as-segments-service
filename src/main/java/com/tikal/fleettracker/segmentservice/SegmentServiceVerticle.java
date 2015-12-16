@@ -1,4 +1,4 @@
-package com.tikal.angelsense.segmentservice;
+package com.tikal.fleettracker.segmentservice;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
