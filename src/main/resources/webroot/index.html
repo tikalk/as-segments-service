@@ -23,14 +23,14 @@
   var eb = new EventBus("http://localhost:9080/eventbus");
 
   //eb.onopen = function () {
-  //  eb.registerHandler("segments-feed-1", function (err, msg) {
+  //  eb.registerHandler("long-transits-feed-1", function (err, msg) {
   //    var str = "<code>" + msg.body + "</code><br>";
   //    $('#status').prepend(str);
   //  })
   //}
   
   eb.onopen = function () {
-    eb.registerHandler("segments-feed-all", function (err, msg) {
+    eb.registerHandler("long-transits-feed-all", function (err, msg) {
       var str = "<code>" + msg.body + "</code><br>";
       $('#status').prepend(str);
     })

@@ -51,7 +51,7 @@ shadowJar {
     classifier = 'fat'
     manifest {
         attributes 'Main-Class': 'io.vertx.core.Launcher'
-        attributes 'Main-Verticle': 'com.tikal.fleettracker.segmentservice.SegmentServiceVerticle'
+        attributes 'Main-Verticle': 'com.tikal.fleettracker.segmentservice.LongTransitsServiceVerticle'
     }
     mergeServiceFiles {
         include 'META-INF/services/io.vertx.core.spi.VerticleFactory'

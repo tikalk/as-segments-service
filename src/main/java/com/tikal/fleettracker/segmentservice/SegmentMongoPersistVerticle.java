@@ -73,8 +73,8 @@ public class SegmentMongoPersistVerticle extends AbstractVerticle {
 				logger.debug("Add a new segment in Mongo, and now will publish it. Segment is {}",segment);
 			else
 				logger.debug("Update existing segment in Mongo, and now will publish it. Segment is {}",segment);
-			vertx.eventBus().publish("segments-feed-all", segment);
-			vertx.eventBus().publish("segments-feed-"+vehicleId, segment);
+			vertx.eventBus().publish("long-transits-all", segment);
+			vertx.eventBus().publish("long-transits-"+vehicleId, segment);
 		}
 		else
 			logger.error("Problem on adding Segment {}: ",segment,ar.cause());

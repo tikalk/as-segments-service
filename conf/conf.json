@@ -1,4 +1,5 @@
 {
+	"longTransitThresholdInSec":60,
 	"http-port" : 9080,
 	"mongoConfig" : {
 		"recreate" : true,
