@@ -34,7 +34,7 @@ public class LongTransitsFinderVerticle extends AbstractVerticle {
 		collectionName = config().getJsonObject("mongoConfig").getString("segments_col_name");
 
 		final Router router = Router.router(vertx);
-		router.route(HttpMethod.GET, "/long-transists/vehicle/:vehicleId").handler(this::handleQuery);
+		router.route(HttpMethod.GET, "/long-transits/vehicle/:vehicleId").handler(this::handleQuery);
 		// Allow outbound traffic to the segments-feed address
 		final BridgeOptions options = new BridgeOptions().addOutboundPermitted(new PermittedOptions().setAddressRegex("long-transits-feed.*"));
 		router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options, this::handleBridgeEvent));
