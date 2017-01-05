@@ -4,12 +4,13 @@
 	"mongoConfig" : {
 		"recreate" : true,
 		"segments_col_name" : "segments",
-		"connection_string" : "mongodb://localhost:27017",
+		"connection_string" : "mongodb://mongo:27017",
 		"db_name" : "segments_db"
 	}, 
 	
 	"consumer" : {
-	    "zookeeper.host" : "localhost",
+	    "zookeeper.host" : "zookeeper:2181",
+		"bootstrap.servers" : "kafka:9092",
 	    "group.id" : "segmentServiceGroup",
 	    "topics" : ["as-segments"]
 	 }

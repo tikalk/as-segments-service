@@ -2,7 +2,8 @@ package com.tikal.fleettracker.segmentservice;
 
 import java.util.Arrays;
 
-import com.cyngn.kafka.MessageConsumer;
+
+import com.cyngn.kafka.consume.SimpleConsumer;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -29,7 +30,7 @@ public class SegmentMongoPersistVerticle extends AbstractVerticle {
 		if(config().getJsonObject("mongoConfig").getBoolean("recreate"))
 			recreateDB();
 		
-		vertx.deployVerticle(MessageConsumer.class.getName(),new DeploymentOptions().setConfig(config()),this::handleKafkaDeploy);
+		vertx.deployVerticle(SimpleConsumer.class.getName(),new DeploymentOptions().setConfig(config().getJsonObject("consumer")),this::handleKafkaDeploy);
 		
 		logger.info("Started listening to for Segments");
 	}
@@ -83,7 +84,7 @@ public class SegmentMongoPersistVerticle extends AbstractVerticle {
 	private void handleKafkaDeploy(final AsyncResult<String> ar) {
 		if (ar.succeeded()){
 			logger.info("Connected to succfully to Kafka");
-			vertx.eventBus().consumer(MessageConsumer.EVENTBUS_DEFAULT_ADDRESS, this::persistSegmet);
+			vertx.eventBus().consumer(SimpleConsumer.EVENTBUS_DEFAULT_ADDRESS, this::persistSegmet);
 		}
 		else
 			logger.error("Problem connect to Kafka: ",ar.cause());
