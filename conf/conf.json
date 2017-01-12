@@ -9,8 +9,8 @@
 	}, 
 	
 	"consumer" : {
-	    "zookeeper.host" : "zookeeper:2181",
-		"bootstrap.servers" : "kafka:9092",
+	    "zookeeper.host" : "as-zookeeper:2181",
+		"bootstrap.servers" : "as-kafka:9092",
 	    "group.id" : "segmentServiceGroup",
 	    "topics" : ["as-segments"]
 	 }
