@@ -77,12 +77,12 @@ task buildImage(type: DockerBuildImage) {
     dependsOn zipAll
     quiet = false
     inputDir = projectDir
-    tag = "$registerBaseName/$dockerBranch/$project.name:$dockerTag"
+    tag = "$registerBaseName$dockerBranch/$project.name:$dockerTag"
 }
 
 task pushImage(type: DockerPushImage) {
     dependsOn buildImage
-    imageName = "$registerBaseName/$dockerBranch/$project.name"
+    imageName = "$registerBaseName$dockerBranch/$project.name"
     tag="$dockerTag"
 }
 

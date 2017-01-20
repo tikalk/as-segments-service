@@ -10,15 +10,15 @@ From the project home folder run the following command:
 ./gradlew clean shadowJar zipAll
 
 This will create self contained zip, that you can unzip on host container. The output zip is located at
-as-segments-service/build/distributions/as-segment-service-3.1.0.zip
+ft-segments-service/build/distributions/as-segment-service-3.1.0.zip
 
 ## How to run
 -----------
 You must run ZooKeeper and Kafka, before you run this service.
-You also need to have the as-management service running
+You also need to have the ft-management service running
 You also need to have a MongoDB running for this service
 
-Unzip the file as-segments-service/build/distributions/as-segment-service-3.1.0.zip
+Unzip the file ft-segments-service/build/distributions/as-segment-service-3.1.0.zip
 cd to the created folder (as-segment-service-3.1.0)
 Run the following command : 
 ./segment-service.sh
